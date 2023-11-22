@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34316.72
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoomReservationServer", "RoomReservationServer\RoomReservationServer.csproj", "{E555A40A-D0C4-4DFB-A34F-E96D52881CCD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RoomReservationServer", "RoomReservationServer\RoomReservationServer.csproj", "{E555A40A-D0C4-4DFB-A34F-E96D52881CCD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{D1038252-55C7-4D70-96D4-BC94915B7C1B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggerService", "LoggerService\LoggerService.csproj", "{BF274512-0913-4F20-8AFC-403E6CD7BD37}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{E555A40A-D0C4-4DFB-A34F-E96D52881CCD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E555A40A-D0C4-4DFB-A34F-E96D52881CCD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E555A40A-D0C4-4DFB-A34F-E96D52881CCD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D1038252-55C7-4D70-96D4-BC94915B7C1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D1038252-55C7-4D70-96D4-BC94915B7C1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D1038252-55C7-4D70-96D4-BC94915B7C1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D1038252-55C7-4D70-96D4-BC94915B7C1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF274512-0913-4F20-8AFC-403E6CD7BD37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF274512-0913-4F20-8AFC-403E6CD7BD37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF274512-0913-4F20-8AFC-403E6CD7BD37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF274512-0913-4F20-8AFC-403E6CD7BD37}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
