@@ -1,5 +1,8 @@
 ﻿using Contracts;
+using Entities;
 using LoggerService;
+using Microsoft.EntityFrameworkCore;
+using Repository;
 
 namespace RoomReservationServer.Extensions
 {
@@ -28,6 +31,19 @@ namespace RoomReservationServer.Extensions
         public static void ConfigureLoggerService(this IServiceCollection services)
         {
             services.AddSingleton<ILoggerManager, LoggerManager>();
+        }
+
+        public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
+        {
+            var connectionString = config["mysqlconnection:connectionString"];
+
+            services.AddDbContext<RepositoryContext>(o => o.UseMySql(connectionString,
+                MySqlServerVersion.LatestSupportedServerVersion));
+        }
+
+        public static void ConfigureRepositoryWrapper(this IServiceCollection services)
+        {
+            services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
         }
     }
 }

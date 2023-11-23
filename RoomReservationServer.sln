@@ -5,9 +5,13 @@ VisualStudioVersion = 17.8.34316.72
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RoomReservationServer", "RoomReservationServer\RoomReservationServer.csproj", "{E555A40A-D0C4-4DFB-A34F-E96D52881CCD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{D1038252-55C7-4D70-96D4-BC94915B7C1B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Contracts\Contracts.csproj", "{D1038252-55C7-4D70-96D4-BC94915B7C1B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoggerService", "LoggerService\LoggerService.csproj", "{BF274512-0913-4F20-8AFC-403E6CD7BD37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LoggerService", "LoggerService\LoggerService.csproj", "{BF274512-0913-4F20-8AFC-403E6CD7BD37}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Entities", "Entities\Entities.csproj", "{C0709206-C1C4-4FED-AEBC-9CAF29BE779A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Repository", "Repository\Repository.csproj", "{5C1A2CD4-C77D-4583-9006-0EE7C66DDDB8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +31,14 @@ Global
 		{BF274512-0913-4F20-8AFC-403E6CD7BD37}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BF274512-0913-4F20-8AFC-403E6CD7BD37}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BF274512-0913-4F20-8AFC-403E6CD7BD37}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0709206-C1C4-4FED-AEBC-9CAF29BE779A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0709206-C1C4-4FED-AEBC-9CAF29BE779A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0709206-C1C4-4FED-AEBC-9CAF29BE779A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0709206-C1C4-4FED-AEBC-9CAF29BE779A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C1A2CD4-C77D-4583-9006-0EE7C66DDDB8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C1A2CD4-C77D-4583-9006-0EE7C66DDDB8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C1A2CD4-C77D-4583-9006-0EE7C66DDDB8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C1A2CD4-C77D-4583-9006-0EE7C66DDDB8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
