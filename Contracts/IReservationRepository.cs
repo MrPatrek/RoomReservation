@@ -1,8 +1,6 @@
-﻿using Entities.Models;
-
-namespace Contracts
+﻿namespace Contracts
 {
-    public interface IReservationRepository : IRepositoryBase<Reservation>
+    public interface IReservationRepository
     {
     }
 }

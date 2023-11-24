@@ -6,7 +6,8 @@ namespace Entities.Models
     [Table("reservation")]
     public class Reservation
     {
-        public Guid ReservationId { get; set; }
+        [Column("ReservationId")]
+        public Guid Id { get; set; }
 
         [Required(ErrorMessage = "Date created is required")]
         public DateOnly DateCreated { get; set; }

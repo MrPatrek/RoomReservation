@@ -17,6 +17,8 @@ builder.Services.ConfigureMySqlContext(builder.Configuration);
 
 builder.Services.ConfigureRepositoryWrapper();
 
+builder.Services.AddAutoMapper(typeof(Program));
+
 builder.Services.AddControllers();
 
 var app = builder.Build();

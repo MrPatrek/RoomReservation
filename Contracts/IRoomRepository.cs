@@ -2,7 +2,10 @@
 
 namespace Contracts
 {
-    public interface IRoomRepository : IRepositoryBase<Room>
+    public interface IRoomRepository
     {
+        IEnumerable<Room> GetAllRooms();
+        Room GetRoomById(Guid roomId);
+        Room GetRoomWithDetails(Guid roomId);
     }
 }

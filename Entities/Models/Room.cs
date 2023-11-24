@@ -6,7 +6,8 @@ namespace Entities.Models
     [Table("room")]
     public class Room
     {
-        public Guid RoomId { get; set; }
+        [Column("RoomId")]
+        public Guid Id { get; set; }
 
         [Required(ErrorMessage = "Name is required")]
         [StringLength(50, ErrorMessage = "Name can't be longer than 50 characters")]
