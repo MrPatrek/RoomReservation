@@ -31,5 +31,20 @@ namespace Repository
                 .Include(room => room.Reservations)
                 .FirstOrDefault();
         }
+
+        public void CreateRoom(Room room)
+        {
+            Create(room);
+        }
+
+        public void UpdateRoom(Room room)
+        {
+            Update(room);
+        }
+
+        public void DeleteRoom(Room room)
+        {
+            Delete(room);
+        }
     }
 }

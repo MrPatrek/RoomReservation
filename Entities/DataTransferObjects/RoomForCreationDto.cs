@@ -1,14 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Entities.Models
+namespace Entities.DataTransferObjects
 {
-    [Table("room")]
-    public class Room
+    public class RoomForCreationDto
     {
-        [Column("RoomId")]
-        public Guid Id { get; set; }
-
         [Required(ErrorMessage = "Name is required")]
         [StringLength(50, ErrorMessage = "Name can't be longer than 50 characters")]
         public string? Name { get; set; }
@@ -25,7 +20,5 @@ namespace Entities.Models
 
         [StringLength(500, ErrorMessage = "Long description cannot be longer than 500 characters")]
         public string? DescriptionLong { get; set; }
-
-        public ICollection<Reservation>? Reservations { get; set; }
     }
 }

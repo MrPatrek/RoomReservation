@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.DataTransferObjects;
+using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace RoomReservationServer.Controllers
@@ -38,7 +39,7 @@ namespace RoomReservationServer.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{id}", Name = "RoomById")]
         public IActionResult GetRoomById(Guid id)
         {
             try
@@ -88,6 +89,107 @@ namespace RoomReservationServer.Controllers
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside GetRoomWithDetails action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPost]
+        public IActionResult CreateRoom([FromBody] RoomForCreationDto room)
+        {
+            try
+            {
+                if (room is null)
+                {
+                    _logger.LogError("Room object sent from client is null.");
+                    return BadRequest("Room object is null");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid room object sent from client.");
+                    return BadRequest("Invalid model object");
+                }
+
+                var roomEntity = _mapper.Map<Room>(room);
+
+                _repository.Room.CreateRoom(roomEntity);
+                _repository.Save();
+
+                var createdRoom = _mapper.Map<RoomDto>(roomEntity);
+
+                return CreatedAtRoute("RoomById", new { id = createdRoom.Id }, createdRoom);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside CreateRoom action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateRoom(Guid id, [FromBody] RoomForUpdateDto room)
+        {
+            try
+            {
+                if (room is null)
+                {
+                    _logger.LogError("Room object sent from client is null.");
+                    return BadRequest("Room object is null");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid room object sent from client.");
+                    return BadRequest("Invalid model object");
+                }
+
+                var roomEntity = _repository.Room.GetRoomById(id);
+                if (roomEntity is null)
+                {
+                    _logger.LogError($"Room with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }
+
+                _mapper.Map(room, roomEntity);
+
+                _repository.Room.UpdateRoom(roomEntity);
+                _repository.Save();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside UpdateRoom action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult DeleteRoom(Guid id)
+        {
+            try
+            {
+                var room = _repository.Room.GetRoomById(id);
+                if (room == null)
+                {
+                    _logger.LogError($"Room with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }
+
+                if (_repository.Reservation.ReservationsForRoom(id).Any())
+                {
+                    _logger.LogError($"Cannot delete room with id: {id}. It has related reservations. Delete those reservations first");
+                    return BadRequest("Cannot delete room. It has related reservations. Delete those reservations first");
+                }
+
+                _repository.Room.DeleteRoom(room);
+                _repository.Save();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeleteRoom action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
         }

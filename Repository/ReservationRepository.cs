@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Models;
+using System.Security.Principal;
 
 namespace Repository
 {
@@ -9,6 +10,11 @@ namespace Repository
         public ReservationRepository(RepositoryContext repositoryContext)
             : base(repositoryContext)
         {
+        }
+
+        public IEnumerable<Reservation> ReservationsForRoom(Guid roomId)
+        {
+            return FindByCondition(reservation => reservation.RoomId.Equals(roomId)).ToList();
         }
     }
 }
