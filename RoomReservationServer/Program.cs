@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.HttpOverrides;
 using NLog;
 using RoomReservationServer.Extensions;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,7 +20,12 @@ builder.Services.ConfigureRepositoryWrapper();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        // fix the object cycle
+        options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+    });
 
 var app = builder.Build();
 
