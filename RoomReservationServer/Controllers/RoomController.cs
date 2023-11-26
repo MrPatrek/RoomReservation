@@ -3,6 +3,7 @@ using Contracts;
 using Entities.DataTransferObjects;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations;
 
 namespace RoomReservationServer.Controllers
 {
@@ -204,8 +205,8 @@ namespace RoomReservationServer.Controllers
 
         [HttpGet("availability")]
         public IActionResult GetAvailableRooms(
-            [FromQuery(Name = "arrival")] DateTime arrivalDt,
-            [FromQuery(Name = "departure")] DateTime departureDt
+            [FromQuery(Name = "arrival")][Required(ErrorMessage = "Specify the arrival date.")] DateTime arrivalDt,
+            [FromQuery(Name = "departure")][Required(ErrorMessage = "Specify the departure date.")] DateTime departureDt
             )
         {
             try
@@ -213,9 +214,16 @@ namespace RoomReservationServer.Controllers
                 DateOnly arrival = DateOnly.FromDateTime(arrivalDt);
                 DateOnly departure = DateOnly.FromDateTime(departureDt);
 
-                var availableRooms = _repository.Room.GetAvailableRooms(arrival, departure);
+                // check if dates follow the common sense
+                IActionResult check = checkDates(arrival, departure);
+                if (check is BadRequestObjectResult)
+                {
+                    return check;
+                }
 
-                if (availableRooms == null)
+                // if all is ok, proceed with the request:
+                var availableRooms = _repository.Room.GetAvailableRooms(arrival, departure);
+                if (!availableRooms.Any())
                 {
                     _logger.LogInfo($"No rooms between {arrival} and {departure} dates have been found.");
                     return NoContent();
@@ -245,8 +253,8 @@ namespace RoomReservationServer.Controllers
         [HttpGet("{id}/availability")]
         public IActionResult IsRoomAvailable(
             Guid id,
-            [FromQuery(Name = "arrival")] DateTime arrivalDt,
-            [FromQuery(Name = "departure")] DateTime departureDt
+            [FromQuery(Name = "arrival")][Required(ErrorMessage = "Specify the arrival date.")] DateTime arrivalDt,
+            [FromQuery(Name = "departure")][Required(ErrorMessage = "Specify the departure date.")] DateTime departureDt
             )
         {
             try
@@ -254,6 +262,14 @@ namespace RoomReservationServer.Controllers
                 DateOnly arrival = DateOnly.FromDateTime(arrivalDt);
                 DateOnly departure = DateOnly.FromDateTime(departureDt);
 
+                // check if dates follow the common sense
+                IActionResult check = checkDates(arrival, departure);
+                if (check is BadRequestObjectResult)
+                {
+                    return check;
+                }
+
+                // if all is ok, proceed with the request:
                 var room = _repository.Room.GetRoomWithDetails(id);
                 if (room == null)
                 {
@@ -280,6 +296,24 @@ namespace RoomReservationServer.Controllers
                 _logger.LogError($"Something went wrong inside IsRoomAvailable action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
+        }
+
+        private IActionResult checkDates(DateOnly arrival, DateOnly departure)
+        {
+            // check for following common sense:
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            if (!(arrival < departure))
+            {
+                _logger.LogError($"Arrival date ({arrival}) is not before the departure date ({departure}), but it has to be.");
+                return BadRequest("Your arrival date is not before your departure, but it has to be.");
+            }
+            if (arrival < today)
+            {
+                _logger.LogError($"Arrival date ({arrival}) cannot be in the past, it has to be at least today ({today}).");
+                return BadRequest("Your arrival date must be at least today. It can be later than today, but not before.");
+            }
+
+            return NoContent();
         }
     }
 }
