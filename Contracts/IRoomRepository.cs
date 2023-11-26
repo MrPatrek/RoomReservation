@@ -10,5 +10,7 @@ namespace Contracts
         void CreateRoom(Room room);
         void UpdateRoom(Room room);
         void DeleteRoom(Room room);
+
+        public IEnumerable<Room> GetAvailableRooms(DateOnly arrival, DateOnly departure);
     }
 }

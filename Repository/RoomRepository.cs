@@ -46,5 +46,27 @@ namespace Repository
         {
             Delete(room);
         }
+
+
+
+
+
+        // Now, special room queries:
+
+
+
+        public IEnumerable<Room> GetAvailableRooms(DateOnly arrival, DateOnly departure)
+        {
+            return FindAll()
+                .Include(room => room.Reservations)
+                .Where(room => room.Reservations
+                    .All(reservation => reservation.Departure <= arrival || reservation.Arrival >= departure))
+                .OrderBy(room => room.Name)
+                .ToList();
+
+            //.Where(room => room.Reservations
+            //        .Where(reservation => reservation.Arrival >= arrival && reservation.Departure <= departure)
+            //    )
+        }
     }
 }

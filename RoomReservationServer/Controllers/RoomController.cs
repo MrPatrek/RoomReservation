@@ -193,5 +193,93 @@ namespace RoomReservationServer.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
+
+
+
+
+
+        // Now, special action methods:
+
+
+
+        [HttpGet("availability")]
+        public IActionResult GetAvailableRooms(
+            [FromQuery(Name = "arrival")] DateTime arrivalDt,
+            [FromQuery(Name = "departure")] DateTime departureDt
+            )
+        {
+            try
+            {
+                DateOnly arrival = DateOnly.FromDateTime(arrivalDt);
+                DateOnly departure = DateOnly.FromDateTime(departureDt);
+
+                var availableRooms = _repository.Room.GetAvailableRooms(arrival, departure);
+
+                if (availableRooms == null)
+                {
+                    _logger.LogInfo($"No rooms between {arrival} and {departure} dates have been found.");
+                    return NoContent();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned rooms between {arrival} and {departure} dates.");
+
+                    var availableRoomsResult = _mapper.Map<IEnumerable<RoomAvailableDto>>(availableRooms);
+
+                    var numNights = departure.DayNumber - arrival.DayNumber;
+                    foreach (var room in availableRoomsResult)
+                    {
+                        room.PriceTotal = room.Price * numNights;
+                    }
+
+                    return Ok(availableRoomsResult);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetAvailableRooms action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpGet("{id}/availability")]
+        public IActionResult IsRoomAvailable(
+            Guid id,
+            [FromQuery(Name = "arrival")] DateTime arrivalDt,
+            [FromQuery(Name = "departure")] DateTime departureDt
+            )
+        {
+            try
+            {
+                DateOnly arrival = DateOnly.FromDateTime(arrivalDt);
+                DateOnly departure = DateOnly.FromDateTime(departureDt);
+
+                var room = _repository.Room.GetRoomWithDetails(id);
+                if (room == null)
+                {
+                    _logger.LogError($"Room with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }
+
+                bool isAvailable = room.Reservations
+                    .All(reservation => reservation.Departure <= arrival || reservation.Arrival >= departure);
+
+                if (!isAvailable)
+                {
+                    _logger.LogInfo($"Room with id: {id}, is not available between {arrival} and {departure} dates.");
+                    return NoContent();
+                }
+                else
+                {
+                    _logger.LogInfo($"Room with id: {id}, is available between {arrival} and {departure} dates.");
+                    return Ok(true);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside IsRoomAvailable action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
     }
 }

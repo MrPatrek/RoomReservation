@@ -10,6 +10,8 @@ namespace RoomReservationServer
         {
             CreateMap<Room, RoomDto>();
 
+            CreateMap<Room, RoomAvailableDto>();
+
             CreateMap<Reservation, ReservationDto>();
 
             CreateMap<RoomForCreationDto, Room>();
