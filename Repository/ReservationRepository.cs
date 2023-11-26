@@ -37,5 +37,20 @@ namespace Repository
         {
             return FindByCondition(reservation => reservation.RoomId.Equals(roomId)).ToList();
         }
+
+        public void CreateReservation(Reservation reservation)
+        {
+            Create(reservation);
+        }
+
+        public void UpdateReservation(Reservation reservation)
+        {
+            Update(reservation);
+        }
+
+        public void DeleteReservation(Reservation reservation)
+        {
+            Delete(reservation);
+        }
     }
 }

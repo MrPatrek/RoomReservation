@@ -3,6 +3,7 @@ using Contracts;
 using Entities.DataTransferObjects;
 using Entities.Models;
 using Microsoft.AspNetCore.Mvc;
+using RoomReservationServer.Interfaces;
 using System.ComponentModel.DataAnnotations;
 
 namespace RoomReservationServer.Controllers
@@ -14,12 +15,14 @@ namespace RoomReservationServer.Controllers
         private ILoggerManager _logger;
         private IRepositoryWrapper _repository;
         private IMapper _mapper;
+        private ISharedController _sharedController;
 
-        public RoomController(ILoggerManager logger, IRepositoryWrapper repository, IMapper mapper)
+        public RoomController(ILoggerManager logger, IRepositoryWrapper repository, IMapper mapper, ISharedController sharedController)
         {
             _logger = logger;
             _repository = repository;
             _mapper = mapper;
+            _sharedController = sharedController;
         }
 
         [HttpGet]
@@ -215,7 +218,7 @@ namespace RoomReservationServer.Controllers
                 DateOnly departure = DateOnly.FromDateTime(departureDt);
 
                 // check if dates follow the common sense
-                IActionResult check = checkDates(arrival, departure);
+                IActionResult check = _sharedController.CheckDates(arrival, departure);
                 if (check is BadRequestObjectResult)
                 {
                     return check;
@@ -262,58 +265,13 @@ namespace RoomReservationServer.Controllers
                 DateOnly arrival = DateOnly.FromDateTime(arrivalDt);
                 DateOnly departure = DateOnly.FromDateTime(departureDt);
 
-                // check if dates follow the common sense
-                IActionResult check = checkDates(arrival, departure);
-                if (check is BadRequestObjectResult)
-                {
-                    return check;
-                }
-
-                // if all is ok, proceed with the request:
-                var room = _repository.Room.GetRoomWithDetails(id);
-                if (room == null)
-                {
-                    _logger.LogError($"Room with id: {id}, hasn't been found in db.");
-                    return NotFound();
-                }
-
-                bool isAvailable = room.Reservations
-                    .All(reservation => reservation.Departure <= arrival || reservation.Arrival >= departure);
-
-                if (!isAvailable)
-                {
-                    _logger.LogInfo($"Room with id: {id}, is not available between {arrival} and {departure} dates.");
-                    return NoContent();
-                }
-                else
-                {
-                    _logger.LogInfo($"Room with id: {id}, is available between {arrival} and {departure} dates.");
-                    return Ok(true);
-                }
+                return _sharedController.IsRoomAvailable(id, arrival, departure);
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong inside IsRoomAvailable action: {ex.Message}");
                 return StatusCode(500, "Internal server error");
             }
-        }
-
-        private IActionResult checkDates(DateOnly arrival, DateOnly departure)
-        {
-            // check for following common sense:
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            if (!(arrival < departure))
-            {
-                _logger.LogError($"Arrival date ({arrival}) is not before the departure date ({departure}), but it has to be.");
-                return BadRequest("Your arrival date is not before your departure, but it has to be.");
-            }
-            if (arrival < today)
-            {
-                _logger.LogError($"Arrival date ({arrival}) cannot be in the past, it has to be at least today ({today}).");
-                return BadRequest("Your arrival date must be at least today. It can be later than today, but not before.");
-            }
-
-            return NoContent();
         }
     }
 }

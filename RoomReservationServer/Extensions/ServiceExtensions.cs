@@ -3,6 +3,8 @@ using Entities;
 using LoggerService;
 using Microsoft.EntityFrameworkCore;
 using Repository;
+using RoomReservationServer.Controllers;
+using RoomReservationServer.Interfaces;
 
 namespace RoomReservationServer.Extensions
 {
@@ -44,6 +46,11 @@ namespace RoomReservationServer.Extensions
         public static void ConfigureRepositoryWrapper(this IServiceCollection services)
         {
             services.AddScoped<IRepositoryWrapper, RepositoryWrapper>();
+        }
+
+        public static void ConfigureSharedController(this IServiceCollection services)
+        {
+            services.AddTransient<ISharedController, SharedController>();
         }
     }
 }

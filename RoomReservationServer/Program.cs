@@ -20,6 +20,8 @@ builder.Services.ConfigureRepositoryWrapper();
 
 builder.Services.AddAutoMapper(typeof(Program));
 
+builder.Services.ConfigureSharedController();
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
