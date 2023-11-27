@@ -1,4 +1,6 @@
 ﻿using Contracts;
+using EmailService;
+using EmailService.Interfaces;
 using Entities;
 using LoggerService;
 using Microsoft.EntityFrameworkCore;
@@ -51,6 +53,17 @@ namespace RoomReservationServer.Extensions
         public static void ConfigureSharedController(this IServiceCollection services)
         {
             services.AddTransient<ISharedController, SharedController>();
+        }
+
+        public static void ConfigureEmailService(this IServiceCollection services, IConfiguration config)
+        {
+            var emailConfig = config
+                .GetSection("EmailConfiguration")
+                .Get<EmailConfiguration>();
+
+            services.AddSingleton(emailConfig);
+
+            services.AddScoped<IEmailSender, EmailSender>();
         }
     }
 }

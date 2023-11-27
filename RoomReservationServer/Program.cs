@@ -22,6 +22,8 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.ConfigureSharedController();
 
+builder.Services.ConfigureEmailService(builder.Configuration);
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
