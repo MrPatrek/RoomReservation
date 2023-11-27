@@ -8,5 +8,7 @@
         public decimal PriceTotal { get; set; }
         public string? DescriptionShort { get; set; }
         public string? DescriptionLong { get; set; }
+
+        public IEnumerable<ImageDto>? Images { get; set; }
     }
 }

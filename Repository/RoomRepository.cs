@@ -25,10 +25,17 @@ namespace Repository
                 .FirstOrDefault();
         }
 
-        public Room GetRoomWithDetails(Guid roomId)
+        public Room GetRoomWithReservations(Guid roomId)
         {
             return FindByCondition(room => room.Id.Equals(roomId))
                 .Include(room => room.Reservations)
+                .FirstOrDefault();
+        }
+        
+        public Room GetRoomWithImages(Guid roomId)
+        {
+            return FindByCondition(room => room.Id.Equals(roomId))
+                .Include(room => room.Images)
                 .FirstOrDefault();
         }
 
@@ -59,6 +66,7 @@ namespace Repository
         {
             return FindAll()
                 .Include(room => room.Reservations)
+                .Include(room => room.Images)
                 .Where(room => room.Reservations
                     .All(reservation => reservation.Departure <= arrival || reservation.Arrival >= departure))
                 .OrderBy(room => room.Name)

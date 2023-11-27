@@ -71,11 +71,11 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpGet("{id}/reservation")]
-        public IActionResult GetRoomWithDetails(Guid id)
+        public IActionResult GetRoomWithReservations(Guid id)
         {
             try
             {
-                var room = _repository.Room.GetRoomWithDetails(id);
+                var room = _repository.Room.GetRoomWithReservations(id);
 
                 if (room == null)
                 {
@@ -84,7 +84,34 @@ namespace RoomReservationServer.Controllers
                 }
                 else
                 {
-                    _logger.LogInfo($"Returned room with details for id: {id}");
+                    _logger.LogInfo($"Returned room with reservations for id: {id}");
+
+                    var roomResult = _mapper.Map<RoomDto>(room);
+                    return Ok(roomResult);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside GetRoomWithDetails action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+        
+        [HttpGet("{id}/image")]
+        public IActionResult GetRoomWithImages(Guid id)
+        {
+            try
+            {
+                var room = _repository.Room.GetRoomWithImages(id);
+
+                if (room == null)
+                {
+                    _logger.LogError($"Room with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned room with images for id: {id}");
 
                     var roomResult = _mapper.Map<RoomDto>(room);
                     return Ok(roomResult);
@@ -184,6 +211,15 @@ namespace RoomReservationServer.Controllers
                 {
                     _logger.LogError($"Cannot delete room with id: {id}. It has related reservations. Delete those reservations first");
                     return BadRequest("Cannot delete room. It has related reservations. Delete those reservations first");
+                }
+
+                var roomImages = _repository.Image.ImagesForRoom(id);
+                if (roomImages.Any())
+                {
+                    foreach (var image in roomImages)
+                    {
+                        _sharedController.DeleteImage(image.Id);
+                    }
                 }
 
                 _repository.Room.DeleteRoom(room);

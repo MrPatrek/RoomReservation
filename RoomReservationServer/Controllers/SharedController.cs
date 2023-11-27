@@ -26,7 +26,7 @@ namespace RoomReservationServer.Controllers
             }
 
             // if all is ok, proceed with the request:
-            var room = _repository.Room.GetRoomWithDetails(id);
+            var room = _repository.Room.GetRoomWithReservations(id);
             if (room == null)
             {
                 _logger.LogError($"Room with id: {id}, hasn't been found in db.");
@@ -62,6 +62,31 @@ namespace RoomReservationServer.Controllers
                 _logger.LogError($"Arrival date ({arrival}) cannot be in the past, it has to be at least today ({today}).");
                 return BadRequest("Your arrival date must be at least today. It can be later than today, but not before.");
             }
+
+            return NoContent();
+        }
+
+        public IActionResult DeleteImage(Guid id)
+        {
+            var image = _repository.Image.GetImageById(id);
+            if (image == null)
+            {
+                _logger.LogError($"Image with id: {id}, hasn't been found in db.");
+                return NotFound();
+            }
+
+            if (System.IO.File.Exists(image.Path))
+            {
+                System.IO.File.Delete(image.Path);
+            }
+            else
+            {
+                _logger.LogError($"Image with id: {id}, HAS been found in the DB, but not in the resources...");
+                return NotFound($"Image with id: {id}, HAS been found in the DB, but not in the resources...");
+            }
+
+            _repository.Image.DeleteImage(image);
+            _repository.Save();
 
             return NoContent();
         }

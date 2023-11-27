@@ -11,6 +11,7 @@
         public string? GuestTel { get; set; }
         public string? Remark { get; set; }
         public decimal Price { get; set; }
+
         public RoomDto? Room { get; set; }
     }
 }

@@ -6,7 +6,9 @@ using LoggerService;
 using Microsoft.EntityFrameworkCore;
 using Repository;
 using RoomReservationServer.Controllers;
+using RoomReservationServer.FileUploader;
 using RoomReservationServer.Interfaces;
+using System.Text.Json.Serialization;
 
 namespace RoomReservationServer.Extensions
 {
@@ -30,6 +32,16 @@ namespace RoomReservationServer.Extensions
             {
 
             });
+        }
+
+        public static void ConfigureControllers(this IServiceCollection services)
+        {
+            services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    // fix the object cycle
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                });
         }
 
         public static void ConfigureLoggerService(this IServiceCollection services)
@@ -64,6 +76,11 @@ namespace RoomReservationServer.Extensions
             services.AddSingleton(emailConfig);
 
             services.AddScoped<IEmailSender, EmailSender>();
+        }
+
+        public static void ConfigurFileService(this IServiceCollection services)
+        {
+            services.AddScoped<IFileService, FileService>();
         }
     }
 }

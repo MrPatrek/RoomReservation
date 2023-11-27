@@ -6,7 +6,8 @@ namespace Contracts
     {
         IEnumerable<Room> GetAllRooms();
         Room GetRoomById(Guid roomId);
-        Room GetRoomWithDetails(Guid roomId);
+        Room GetRoomWithReservations(Guid roomId);
+        Room GetRoomWithImages(Guid roomId);
         void CreateRoom(Room room);
         void UpdateRoom(Room room);
         void DeleteRoom(Room room);

@@ -8,6 +8,7 @@ namespace Repository
         private RepositoryContext _repoContext;
         private IRoomRepository _room;
         private IReservationRepository _reservation;
+        private IImageRepository _image;
 
         public IRoomRepository Room
         {
@@ -32,6 +33,19 @@ namespace Repository
                 }
 
                 return _reservation;
+            }
+        }
+        
+        public IImageRepository Image
+        {
+            get
+            {
+                if (_image == null)
+                {
+                    _image = new ImageRepository(_repoContext);
+                }
+
+                return _image;
             }
         }
 

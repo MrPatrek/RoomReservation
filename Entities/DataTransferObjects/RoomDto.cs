@@ -9,5 +9,6 @@
         public string? DescriptionLong { get; set; }
 
         public IEnumerable<ReservationDto>? Reservations { get; set; }
+        public IEnumerable<ImageDto>? Images { get; set; }
     }
 }

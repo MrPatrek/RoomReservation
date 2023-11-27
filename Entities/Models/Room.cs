@@ -27,5 +27,6 @@ namespace Entities.Models
         public string? DescriptionLong { get; set; }
 
         public ICollection<Reservation>? Reservations { get; set; }
+        public ICollection<Image>? Images { get; set; }
     }
 }

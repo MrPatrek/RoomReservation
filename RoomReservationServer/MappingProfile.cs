@@ -21,6 +21,8 @@ namespace RoomReservationServer
             CreateMap<ReservationForCreationDto, Reservation>();
 
             CreateMap<ReservationForUpdateDto, Reservation>();
+
+            CreateMap<Image, ImageDto>();
         }
     }
 }
