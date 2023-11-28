@@ -7,7 +7,7 @@ namespace Contracts
         IEnumerable<Image> GetAllImages();
         Image GetImageById(Guid imageId);
         Image GetImageWithDetails(Guid imageId);
-        IEnumerable<Image> ImagesForRoom(Guid roomId);
+        IEnumerable<Image> GetImagesForRoom(Guid roomId);
         void CreateImage(Image image);
         void DeleteImage(Image image);
     }

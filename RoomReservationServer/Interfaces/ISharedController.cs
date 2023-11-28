@@ -6,6 +6,6 @@ namespace RoomReservationServer.Interfaces
     {
         IActionResult IsRoomAvailable(Guid id, DateOnly arrival, DateOnly departure);
         IActionResult CheckDates(DateOnly arrival, DateOnly departure);
-        IActionResult DeleteImage(Guid id);
+        IActionResult DeleteImagesForRoom(Guid roomId);
     }
 }

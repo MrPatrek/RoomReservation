@@ -96,7 +96,7 @@ namespace RoomReservationServer.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-        
+
         [HttpGet("{id}/image")]
         public IActionResult GetRoomWithImages(Guid id)
         {
@@ -207,19 +207,16 @@ namespace RoomReservationServer.Controllers
                     return NotFound();
                 }
 
-                if (_repository.Reservation.ReservationsForRoom(id).Any())
+                if (_repository.Reservation.GetReservationsForRoom(id).Any())
                 {
                     _logger.LogError($"Cannot delete room with id: {id}. It has related reservations. Delete those reservations first");
                     return BadRequest("Cannot delete room. It has related reservations. Delete those reservations first");
                 }
 
-                var roomImages = _repository.Image.ImagesForRoom(id);
-                if (roomImages.Any())
+                IActionResult deleteRoomsResult = _sharedController.DeleteImagesForRoom(id);
+                if (deleteRoomsResult is not NoContentResult)
                 {
-                    foreach (var image in roomImages)
-                    {
-                        _sharedController.DeleteImage(image.Id);
-                    }
+                    return deleteRoomsResult;
                 }
 
                 _repository.Room.DeleteRoom(room);

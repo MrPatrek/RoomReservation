@@ -33,7 +33,7 @@ namespace Repository
         }
 
         // this one is used by DeleteRoom action menthod
-        public IEnumerable<Reservation> ReservationsForRoom(Guid roomId)
+        public IEnumerable<Reservation> GetReservationsForRoom(Guid roomId)
         {
             return FindByCondition(reservation => reservation.RoomId.Equals(roomId)).ToList();
         }

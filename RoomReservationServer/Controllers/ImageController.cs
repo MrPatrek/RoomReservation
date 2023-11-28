@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
 using RoomReservationServer.FileUploader;
 using RoomReservationServer.Interfaces;
-using System.IO;
 
 namespace RoomReservationServer.Controllers
 {
@@ -121,6 +120,9 @@ namespace RoomReservationServer.Controllers
                     NotUploadedFiles = notUploadedFiles
                 };
 
+                if (fileCount == 0)
+                    return BadRequest("You did not upload files.");
+
                 return CreatedAtAction(nameof(UploadImage), fileUploadSummary);
             }
             catch (Exception ex)
@@ -159,7 +161,41 @@ namespace RoomReservationServer.Controllers
         {
             try
             {
-                return _sharedController.DeleteImage(id);
+                var image = _repository.Image.GetImageById(id);
+                if (image == null)
+                {
+                    _logger.LogError($"Image with id: {id}, hasn't been found in db.");
+                    return NotFound();
+                }
+
+                if (System.IO.File.Exists(image.Path))
+                {
+                    System.IO.File.Delete(image.Path);
+                }
+                else
+                {
+                    _logger.LogError($"Image with id: {id}, HAS been found in the DB, but not in the resources... No changes were applied.");
+                    return NotFound($"Image with id: {id}, HAS been found in the DB, but not in the resources... No changes were applied.");
+                }
+
+                _repository.Image.DeleteImage(image);
+                _repository.Save();
+
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong inside DeleteImages action: {ex.Message}");
+                return StatusCode(500, "Internal server error");
+            }
+        }
+
+        [HttpDelete("room-id-{roomId}")]
+        public IActionResult DeleteImagesForRoom(Guid roomId)
+        {
+            try
+            {
+                return _sharedController.DeleteImagesForRoom(roomId);
             }
             catch (Exception ex)
             {

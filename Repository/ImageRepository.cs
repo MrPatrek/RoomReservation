@@ -33,9 +33,10 @@ namespace Repository
         }
 
         // this one is used by DeleteRoom action menthod
-        public IEnumerable<Image> ImagesForRoom(Guid roomId)
+        public IEnumerable<Image> GetImagesForRoom(Guid roomId)
         {
-            return FindByCondition(image => image.RoomId.Equals(roomId)).ToList();
+            return FindByCondition(image => image.RoomId.Equals(roomId))
+                .ToList();
         }
 
         public void CreateImage(Image image)

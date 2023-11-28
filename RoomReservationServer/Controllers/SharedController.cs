@@ -66,26 +66,32 @@ namespace RoomReservationServer.Controllers
             return NoContent();
         }
 
-        public IActionResult DeleteImage(Guid id)
+        public IActionResult DeleteImagesForRoom(Guid roomId)
         {
-            var image = _repository.Image.GetImageById(id);
-            if (image == null)
+            var images = _repository.Image.GetImagesForRoom(roomId);
+            if (!images.Any())
             {
-                _logger.LogError($"Image with id: {id}, hasn't been found in db.");
-                return NotFound();
+                _logger.LogInfo($"No images to delete for the room with ID: {roomId}");
+                return NoContent();
             }
 
-            if (System.IO.File.Exists(image.Path))
+            // first, check
+            foreach (var image in images)
+            {
+                if (!System.IO.File.Exists(image.Path))
+                {
+                    _logger.LogError($"Image with id: {image.Id}, HAS been found in the DB, but not in the resources... No changes were applied.");
+                    return NotFound($"Image with id: {image.Id}, HAS been found in the DB, but not in the resources... No changes were applied.");
+                }
+            }
+
+            // then, delete
+            foreach(var image in images)
             {
                 System.IO.File.Delete(image.Path);
-            }
-            else
-            {
-                _logger.LogError($"Image with id: {id}, HAS been found in the DB, but not in the resources...");
-                return NotFound($"Image with id: {id}, HAS been found in the DB, but not in the resources...");
+                _repository.Image.DeleteImage(image);
             }
 
-            _repository.Image.DeleteImage(image);
             _repository.Save();
 
             return NoContent();
