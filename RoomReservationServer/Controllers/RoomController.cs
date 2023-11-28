@@ -2,6 +2,7 @@
 using Contracts;
 using Entities.DataTransferObjects;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RoomReservationServer.Interfaces;
 using System.ComponentModel.DataAnnotations;
@@ -70,7 +71,7 @@ namespace RoomReservationServer.Controllers
             }
         }
 
-        [HttpGet("{id}/reservation")]
+        [HttpGet("{id}/reservation"), Authorize]
         public IActionResult GetRoomWithReservations(Guid id)
         {
             try
@@ -124,7 +125,7 @@ namespace RoomReservationServer.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost, Authorize]
         public IActionResult CreateRoom([FromBody] RoomForCreationDto room)
         {
             try
@@ -157,7 +158,7 @@ namespace RoomReservationServer.Controllers
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize]
         public IActionResult UpdateRoom(Guid id, [FromBody] RoomForUpdateDto room)
         {
             try
@@ -195,7 +196,7 @@ namespace RoomReservationServer.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize]
         public IActionResult DeleteRoom(Guid id)
         {
             try

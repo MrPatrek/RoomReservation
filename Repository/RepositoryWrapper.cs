@@ -9,6 +9,7 @@ namespace Repository
         private IRoomRepository _room;
         private IReservationRepository _reservation;
         private IImageRepository _image;
+        private IUserRepository _user;
 
         public IRoomRepository Room
         {
@@ -35,7 +36,7 @@ namespace Repository
                 return _reservation;
             }
         }
-        
+
         public IImageRepository Image
         {
             get
@@ -46,6 +47,19 @@ namespace Repository
                 }
 
                 return _image;
+            }
+        }
+        
+        public IUserRepository User
+        {
+            get
+            {
+                if (_user == null)
+                {
+                    _user = new UserRepository(_repoContext);
+                }
+
+                return _user;
             }
         }
 

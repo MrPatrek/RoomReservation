@@ -3,11 +3,14 @@ using EmailService;
 using EmailService.Interfaces;
 using Entities;
 using LoggerService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Repository;
 using RoomReservationServer.Controllers;
 using RoomReservationServer.FileUploader;
 using RoomReservationServer.Interfaces;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace RoomReservationServer.Extensions
@@ -78,9 +81,30 @@ namespace RoomReservationServer.Extensions
             services.AddScoped<IEmailSender, EmailSender>();
         }
 
-        public static void ConfigurFileService(this IServiceCollection services)
+        public static void ConfigureFileService(this IServiceCollection services)
         {
             services.AddScoped<IFileService, FileService>();
+        }
+        
+        public static void ConfigureJWTService(this IServiceCollection services, IConfiguration config)
+        {
+            services.AddAuthentication(opt => {
+                opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = "https://localhost:5001;http://localhost:5000",
+                        ValidAudience = "https://localhost:5001;http://localhost:5000",
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]))
+                    };
+                });
         }
     }
 }

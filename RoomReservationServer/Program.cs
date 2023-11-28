@@ -30,7 +30,9 @@ builder.Services.ConfigureSharedController();
 
 builder.Services.ConfigureEmailService(builder.Configuration);
 
-builder.Services.ConfigurFileService();
+builder.Services.ConfigureFileService();
+
+builder.Services.ConfigureJWTService(builder.Configuration);
 
 builder.Services.ConfigureControllers();
 
@@ -45,6 +47,12 @@ else
 
 app.UseHttpsRedirection();
 
+// We call the UseCors method above the UseAuthorization method, as Microsoft recommends.
+app.UseCors("CorsPolicy");
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions()
 {
@@ -56,11 +64,6 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.All
 });
-
-// We call the UseCors method above the UseAuthorization method, as Microsoft recommends.
-app.UseCors("CorsPolicy");
-
-app.UseAuthorization();
 
 app.MapControllers();
 

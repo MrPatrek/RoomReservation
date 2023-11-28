@@ -12,5 +12,7 @@ namespace Entities
 
         public DbSet<Room>? Rooms { get; set; }
         public DbSet<Reservation>? Reservations { get; set; }
+        public DbSet<Image>? Images { get; set; }
+        public DbSet<User>? Users { get; set; }
     }
 }
