@@ -6,6 +6,7 @@ using RoomReservationServer.Extensions;
 var builder = WebApplication.CreateBuilder(args);
 
 LogManager.Setup().LoadConfigurationFromFile(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
+Directory.CreateDirectory(@$"{builder.Configuration["ResourcesDir"]}");
 
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {
@@ -56,8 +57,8 @@ app.UseAuthorization();
 app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions()
 {
-    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @"Resources")),
-    RequestPath = new PathString("/Resources")
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @$"{builder.Configuration["ResourcesDir"]}")),
+    RequestPath = new PathString($"/{builder.Configuration["ResourcesDir"]}")
 });
 
 app.UseForwardedHeaders(new ForwardedHeadersOptions

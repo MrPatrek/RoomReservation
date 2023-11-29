@@ -8,15 +8,19 @@ namespace RoomReservationServer.FileUploader
 {
     public class FileService : IFileService
     {
-        private const string UploadsSubDirectory = @"Resources\Images";
+        private readonly string UploadsSubDirectory;
 
         private readonly IEnumerable<string> allowedExtensions = new List<string> { ".png", ".jpg" };
 
-        private IRepositoryWrapper _repository;
+        private readonly IRepositoryWrapper _repository;
+        private readonly IConfiguration _configuration;
 
-        public FileService(IRepositoryWrapper repository)
+        public FileService(IRepositoryWrapper repository, IConfiguration configuration)
         {
             _repository = repository;
+            _configuration = configuration;
+
+            UploadsSubDirectory = @$"{_configuration.GetValue<string>("ResourcesDir")}/Images";
         }
 
         //public async Task<FileUploadSummary> UploadFileAsync(Stream fileStream, string contentType)
