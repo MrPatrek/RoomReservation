@@ -50,7 +50,11 @@ namespace RoomReservationServer.Controllers
             if (loginPasswordHash.Equals(userDb.PasswordHash))
             {
                 // when all checks are passed:
-                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("TokenKey")));
+
+                string tokenKey = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT").Equals("Development")
+                    ? _configuration.GetValue<string>("TokenKey") : Environment.GetEnvironmentVariable("TOKEN_KEY");
+
+                var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
                 var tokeOptions = new JwtSecurityToken(
                     issuer: "https://localhost:5001",
