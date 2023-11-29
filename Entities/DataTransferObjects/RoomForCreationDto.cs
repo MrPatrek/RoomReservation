@@ -10,7 +10,7 @@ namespace Entities.DataTransferObjects
 
         [Required(ErrorMessage = "Price is required")]
         [DataType(DataType.Currency)]
-        [Range(typeof(decimal), "0", "999999,99")]      // despite it being decimal, "m" in the end was causing an exception + comma needed instead of period
+        [Range(typeof(decimal), "0", "999999.99")]      // depends on the current culture
         // https://stackoverflow.com/a/32068185
         public decimal Price { get; set; }
 

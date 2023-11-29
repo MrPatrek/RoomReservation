@@ -172,17 +172,18 @@ namespace RoomReservationServer.Controllers
                 if (System.IO.File.Exists(image.Path))
                 {
                     System.IO.File.Delete(image.Path);
+
+                    _repository.Image.DeleteImage(image);
+                    await _repository.SaveAsync();
+
+                    return NoContent();
                 }
                 else
                 {
-                    _logger.LogError($"Image with id: {id}, HAS been found in the DB, but not in the resources... No changes were applied.");
-                    return NotFound($"Image with id: {id}, HAS been found in the DB, but not in the resources... No changes were applied.");
+                    _logger.LogError($"Image with id: {id}, HAS been found in the DB, but not in the resources... Image was not removed.");
+                    return NotFound($"Image with id: {id}, HAS been found in the DB, but not in the resources... Image was not removed.");
                 }
 
-                _repository.Image.DeleteImage(image);
-                await _repository.SaveAsync();
-
-                return NoContent();
             }
             catch (Exception ex)
             {

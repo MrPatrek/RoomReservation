@@ -79,8 +79,8 @@ namespace RoomReservationServer.Controllers
             {
                 if (!System.IO.File.Exists(image.Path))
                 {
-                    _logger.LogError($"Image with id: {image.Id}, HAS been found in the DB, but not in the resources... No changes were applied.");
-                    return NotFound($"Image with id: {image.Id}, HAS been found in the DB, but not in the resources... No changes were applied.");
+                    _logger.LogError($"Image with id: {image.Id}, HAS been found in the DB, but not in the resources... None of images was removed.");
+                    return NotFound($"Image with id: {image.Id}, HAS been found in the DB, but not in the resources... None of images was removed.");
                 }
             }
 

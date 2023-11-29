@@ -52,10 +52,8 @@ namespace RoomReservationServer.Extensions
             services.AddSingleton<ILoggerManager, LoggerManager>();
         }
 
-        public static void ConfigureMySqlContext(this IServiceCollection services, IConfiguration config)
+        public static void ConfigureMySqlContext(this IServiceCollection services, string connectionString)
         {
-            var connectionString = config["mysqlconnection:connectionString"];
-
             services.AddDbContext<RepositoryContext>(o => o.UseMySql(connectionString,
                 MySqlServerVersion.LatestSupportedServerVersion));
         }
@@ -86,7 +84,7 @@ namespace RoomReservationServer.Extensions
             services.AddScoped<IFileService, FileService>();
         }
         
-        public static void ConfigureJWTService(this IServiceCollection services, IConfiguration config)
+        public static void ConfigureJWTService(this IServiceCollection services, string tokenKey)
         {
             services.AddAuthentication(opt => {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -102,7 +100,7 @@ namespace RoomReservationServer.Extensions
                         ValidateIssuerSigningKey = true,
                         ValidIssuer = "https://localhost:5001",
                         ValidAudience = "https://localhost:5001",
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["TokenKey"]))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenKey))
                     };
                 });
         }

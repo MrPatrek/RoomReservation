@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.FileProviders;
 using NLog;
 using RoomReservationServer.Extensions;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +22,14 @@ builder.Services.ConfigureIISIntegration();
 
 builder.Services.ConfigureLoggerService();
 
-builder.Services.ConfigureMySqlContext(builder.Configuration);
+
+
+string connectionString = builder.Environment.IsDevelopment()
+    ? builder.Configuration["mysqlconnection:connectionString"] : Environment.GetEnvironmentVariable("CONNECTION_STRING");
+
+builder.Services.ConfigureMySqlContext(connectionString);
+
+
 
 builder.Services.ConfigureRepositoryWrapper();
 
@@ -33,7 +41,14 @@ builder.Services.ConfigureEmailService(builder.Configuration);
 
 builder.Services.ConfigureFileService();
 
-builder.Services.ConfigureJWTService(builder.Configuration);
+
+
+string tokenKey = builder.Environment.IsDevelopment()
+    ? builder.Configuration["TokenKey"] : Environment.GetEnvironmentVariable("TOKEN_KEY");
+
+builder.Services.ConfigureJWTService(tokenKey);
+
+
 
 builder.Services.ConfigureControllers();
 
@@ -53,6 +68,16 @@ app.UseCors("CorsPolicy");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+
+
+var cultureInfo = new CultureInfo("sl-SL");
+cultureInfo.NumberFormat.NumberDecimalSeparator = ".";
+
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
+
 
 app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions()

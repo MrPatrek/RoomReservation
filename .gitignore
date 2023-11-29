@@ -371,3 +371,8 @@ FodyWeavers.xsd
 # My personal stuff:
 /RoomReservationServer/internal_logs
 /RoomReservationServer/Resources/Images
+
+# For security reasons:
+/RoomReservationServer/appsettings.json
+
+
