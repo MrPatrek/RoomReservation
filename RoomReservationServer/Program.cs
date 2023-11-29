@@ -5,7 +5,7 @@ using RoomReservationServer.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-LogManager.LoadConfiguration(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
+LogManager.Setup().LoadConfigurationFromFile(string.Concat(Directory.GetCurrentDirectory(), "/nlog.config"));
 
 builder.WebHost.ConfigureKestrel(serverOptions =>
 {

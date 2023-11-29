@@ -14,11 +14,11 @@ namespace RoomReservationServer.Controllers
     [ApiController]
     public class ImageController : ControllerBase
     {
-        private ILoggerManager _logger;
-        private IRepositoryWrapper _repository;
-        private IMapper _mapper;
-        private IFileService _fileService;
-        private ISharedController _sharedController;
+        private readonly ILoggerManager _logger;
+        private readonly IRepositoryWrapper _repository;
+        private readonly IMapper _mapper;
+        private readonly IFileService _fileService;
+        private readonly ISharedController _sharedController;
 
         public ImageController(ILoggerManager logger, IRepositoryWrapper repository, IMapper mapper, IFileService fileService, ISharedController sharedController)
         {

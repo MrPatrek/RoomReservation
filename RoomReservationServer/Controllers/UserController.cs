@@ -14,9 +14,9 @@ namespace RoomReservationServer.Controllers
     public class UserController : ControllerBase
     {
 
-        private ILoggerManager _logger;
-        private IRepositoryWrapper _repository;
-        private IConfiguration _configuration;
+        private readonly ILoggerManager _logger;
+        private readonly IRepositoryWrapper _repository;
+        private readonly IConfiguration _configuration;
 
         public UserController(ILoggerManager logger, IRepositoryWrapper repository, IConfiguration configuration)
         {

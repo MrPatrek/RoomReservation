@@ -13,10 +13,10 @@ namespace RoomReservationServer.Controllers
     [ApiController]
     public class RoomController : ControllerBase
     {
-        private ILoggerManager _logger;
-        private IRepositoryWrapper _repository;
-        private IMapper _mapper;
-        private ISharedController _sharedController;
+        private readonly ILoggerManager _logger;
+        private readonly IRepositoryWrapper _repository;
+        private readonly IMapper _mapper;
+        private readonly ISharedController _sharedController;
 
         public RoomController(ILoggerManager logger, IRepositoryWrapper repository, IMapper mapper, ISharedController sharedController)
         {

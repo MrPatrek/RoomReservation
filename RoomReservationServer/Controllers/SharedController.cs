@@ -6,8 +6,8 @@ namespace RoomReservationServer.Controllers
 {
     public class SharedController : ControllerBase, ISharedController
     {
-        private ILoggerManager _logger;
-        private IRepositoryWrapper _repository;
+        private readonly ILoggerManager _logger;
+        private readonly IRepositoryWrapper _repository;
 
         public SharedController(ILoggerManager logger, IRepositoryWrapper repository)
         {

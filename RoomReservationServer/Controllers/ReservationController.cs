@@ -14,11 +14,11 @@ namespace RoomReservationServer.Controllers
     [ApiController]
     public class ReservationController : ControllerBase
     {
-        private ILoggerManager _logger;
-        private IRepositoryWrapper _repository;
-        private IMapper _mapper;
-        private ISharedController _sharedController;
-        private IEmailSender _emailSender;
+        private readonly ILoggerManager _logger;
+        private readonly IRepositoryWrapper _repository;
+        private readonly IMapper _mapper;
+        private readonly ISharedController _sharedController;
+        private readonly IEmailSender _emailSender;
 
         public ReservationController(ILoggerManager logger, IRepositoryWrapper repository, IMapper mapper, ISharedController sharedController, IEmailSender emailSender)
         {
@@ -174,6 +174,8 @@ namespace RoomReservationServer.Controllers
                     <p>Best regards,
                     <br>Room Reservations</p>
 ");
+                // SendEmailAsync() can also be used here, but Outlook won't allow for a second mail that fast
+                // immideately after the first one... But some other mail may.
                 _emailSender.SendEmail(messageToGuest);
 
                 var messageToHotel = new Message(new string[] { "oleksbab20@gmail.com" }, $"New reservation, ID: {createdReservation.Id}", @$"

@@ -21,13 +21,20 @@ namespace EmailService
             Send(emailMessage);
         }
 
+        public async Task SendEmailAsync(Message message)
+        {
+            var mailMessage = CreateEmailMessage(message);
+
+            await SendAsync(mailMessage);
+        }
+
         private MimeMessage CreateEmailMessage(Message message)
         {
             var emailMessage = new MimeMessage();
             emailMessage.From.Add(new MailboxAddress(_emailConfig.NameToDisplay, _emailConfig.From));
             emailMessage.To.AddRange(message.To);
             emailMessage.Subject = message.Subject;
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = string.Format("<p style='color:red;'>{0}</p>", message.Content) };
+            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html) { Text = string.Format("{0}", message.Content) };            // I removed special text formatting from here, but this can be changed back
 
             return emailMessage;
         }
@@ -52,6 +59,31 @@ namespace EmailService
                 finally
                 {
                     client.Disconnect(true);
+                    client.Dispose();
+                }
+            }
+        }
+
+        private async Task SendAsync(MimeMessage mailMessage)
+        {
+            using (var client = new SmtpClient())
+            {
+                try
+                {
+                    await client.ConnectAsync(_emailConfig.SmtpServer, _emailConfig.Port, SecureSocketOptions.StartTls);       // my fix here
+                    client.AuthenticationMechanisms.Remove("XOAUTH2");
+                    await client.AuthenticateAsync(_emailConfig.UserName, _emailConfig.Password);
+
+                    await client.SendAsync(mailMessage);
+                }
+                catch
+                {
+                    //log an error message or throw an exception, or both.
+                    throw;
+                }
+                finally
+                {
+                    await client.DisconnectAsync(true);
                     client.Dispose();
                 }
             }
