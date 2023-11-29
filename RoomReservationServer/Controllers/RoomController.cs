@@ -27,11 +27,11 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllRooms()
+        public async Task<IActionResult> GetAllRooms()
         {
             try
             {
-                var rooms = _repository.Room.GetAllRooms();
+                var rooms = await _repository.Room.GetAllRoomsAsync();
 
                 if (!rooms.Any())
                 {
@@ -55,11 +55,11 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpGet("{id}", Name = "RoomById")]
-        public IActionResult GetRoomById(Guid id)
+        public async Task<IActionResult> GetRoomById(Guid id)
         {
             try
             {
-                var room = _repository.Room.GetRoomById(id);
+                var room = await _repository.Room.GetRoomByIdAsync(id);
 
                 if (room is null)
                 {
@@ -82,11 +82,11 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpGet("{id}/reservation"), Authorize]
-        public IActionResult GetRoomWithReservations(Guid id)
+        public async Task<IActionResult> GetRoomWithReservations(Guid id)
         {
             try
             {
-                var room = _repository.Room.GetRoomWithReservations(id);
+                var room = await _repository.Room.GetRoomWithReservationsAsync(id);
 
                 if (room == null)
                 {
@@ -109,11 +109,11 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpGet("{id}/image")]
-        public IActionResult GetRoomWithImages(Guid id)
+        public async Task<IActionResult> GetRoomWithImages(Guid id)
         {
             try
             {
-                var room = _repository.Room.GetRoomWithImages(id);
+                var room = await _repository.Room.GetRoomWithImagesAsync(id);
 
                 if (room == null)
                 {
@@ -136,7 +136,7 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpPost, Authorize]
-        public IActionResult CreateRoom([FromBody] RoomForCreationDto room)
+        public async Task<IActionResult> CreateRoom([FromBody] RoomForCreationDto room)
         {
             try
             {
@@ -155,7 +155,7 @@ namespace RoomReservationServer.Controllers
                 var roomEntity = _mapper.Map<Room>(room);
 
                 _repository.Room.CreateRoom(roomEntity);
-                _repository.Save();
+                await _repository.SaveAsync();
 
                 var createdRoom = _mapper.Map<RoomDto>(roomEntity);
 
@@ -169,7 +169,7 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpPut("{id}"), Authorize]
-        public IActionResult UpdateRoom(Guid id, [FromBody] RoomForUpdateDto room)
+        public async Task<IActionResult> UpdateRoom(Guid id, [FromBody] RoomForUpdateDto room)
         {
             try
             {
@@ -185,7 +185,7 @@ namespace RoomReservationServer.Controllers
                     return BadRequest("Invalid model object");
                 }
 
-                var roomEntity = _repository.Room.GetRoomById(id);
+                var roomEntity = await _repository.Room.GetRoomByIdAsync(id);
                 if (roomEntity is null)
                 {
                     _logger.LogError($"Room with id: {id}, hasn't been found in db.");
@@ -195,7 +195,7 @@ namespace RoomReservationServer.Controllers
                 _mapper.Map(room, roomEntity);
 
                 _repository.Room.UpdateRoom(roomEntity);
-                _repository.Save();
+                await _repository.SaveAsync();
 
                 return NoContent();
             }
@@ -207,11 +207,11 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpDelete("{id}"), Authorize]
-        public IActionResult DeleteRoom(Guid id)
+        public async Task<IActionResult> DeleteRoom(Guid id)
         {
             try
             {
-                var room = _repository.Room.GetRoomById(id);
+                var room = await _repository.Room.GetRoomByIdAsync(id);
                 if (room == null)
                 {
                     _logger.LogError($"Room with id: {id}, hasn't been found in db.");
@@ -224,14 +224,14 @@ namespace RoomReservationServer.Controllers
                     return BadRequest("Cannot delete room. It has related reservations. Delete those reservations first");
                 }
 
-                IActionResult deleteRoomsResult = _sharedController.DeleteImagesForRoom(id);
+                IActionResult deleteRoomsResult = await _sharedController.DeleteImagesForRoom(id);
                 if (deleteRoomsResult is not NoContentResult)
                 {
                     return deleteRoomsResult;
                 }
 
                 _repository.Room.DeleteRoom(room);
-                _repository.Save();
+                await _repository.SaveAsync();
 
                 return NoContent();
             }
@@ -251,7 +251,7 @@ namespace RoomReservationServer.Controllers
 
 
         [HttpGet("availability")]
-        public IActionResult GetAvailableRooms(
+        public async Task<IActionResult> GetAvailableRooms(
             [FromQuery(Name = "arrival")][Required(ErrorMessage = "Specify the arrival date.")] DateTime arrivalDt,
             [FromQuery(Name = "departure")][Required(ErrorMessage = "Specify the departure date.")] DateTime departureDt
             )
@@ -269,7 +269,7 @@ namespace RoomReservationServer.Controllers
                 }
 
                 // if all is ok, proceed with the request:
-                var availableRooms = _repository.Room.GetAvailableRooms(arrival, departure);
+                var availableRooms = await _repository.Room.GetAvailableRoomsAsync(arrival, departure);
                 if (!availableRooms.Any())
                 {
                     _logger.LogInfo($"No rooms between {arrival} and {departure} dates have been found.");
@@ -298,7 +298,7 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpGet("{id}/availability")]
-        public IActionResult IsRoomAvailable(
+        public async Task<IActionResult> IsRoomAvailable(
             Guid id,
             [FromQuery(Name = "arrival")][Required(ErrorMessage = "Specify the arrival date.")] DateTime arrivalDt,
             [FromQuery(Name = "departure")][Required(ErrorMessage = "Specify the departure date.")] DateTime departureDt
@@ -309,7 +309,7 @@ namespace RoomReservationServer.Controllers
                 DateOnly arrival = DateOnly.FromDateTime(arrivalDt);
                 DateOnly departure = DateOnly.FromDateTime(departureDt);
 
-                return _sharedController.IsRoomAvailable(id, arrival, departure);
+                return await _sharedController.IsRoomAvailable(id, arrival, departure);
             }
             catch (Exception ex)
             {

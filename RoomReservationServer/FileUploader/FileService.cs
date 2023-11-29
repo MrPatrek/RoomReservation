@@ -76,7 +76,7 @@ namespace RoomReservationServer.FileUploader
             };
 
             _repository.Image.CreateImage(imageEntity);
-            _repository.Save();
+            await _repository.SaveAsync();
 
             // (002) end
 

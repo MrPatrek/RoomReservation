@@ -4,8 +4,8 @@ namespace RoomReservationServer.Interfaces
 {
     public interface ISharedController
     {
-        IActionResult IsRoomAvailable(Guid id, DateOnly arrival, DateOnly departure);
+        Task<IActionResult> IsRoomAvailable(Guid id, DateOnly arrival, DateOnly departure);
         IActionResult CheckDates(DateOnly arrival, DateOnly departure);
-        IActionResult DeleteImagesForRoom(Guid roomId);
+        Task<IActionResult> DeleteImagesForRoom(Guid roomId);
     }
 }

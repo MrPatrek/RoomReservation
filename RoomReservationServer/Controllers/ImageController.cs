@@ -64,7 +64,7 @@ namespace RoomReservationServer.Controllers
 
                             // here we start the DB stuff:
 
-                            var room = _repository.Room.GetRoomById(roomId);
+                            var room = await _repository.Room.GetRoomByIdAsync(roomId);
 
                             if (room is null)
                             {
@@ -158,7 +158,7 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpDelete("{id}")]
-        public IActionResult DeleteImage(Guid id)
+        public async Task<IActionResult> DeleteImage(Guid id)
         {
             try
             {
@@ -180,7 +180,7 @@ namespace RoomReservationServer.Controllers
                 }
 
                 _repository.Image.DeleteImage(image);
-                _repository.Save();
+                await _repository.SaveAsync();
 
                 return NoContent();
             }
@@ -192,11 +192,11 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpDelete("room-id-{roomId}")]
-        public IActionResult DeleteImagesForRoom(Guid roomId)
+        public async Task<IActionResult> DeleteImagesForRoom(Guid roomId)
         {
             try
             {
-                return _sharedController.DeleteImagesForRoom(roomId);
+                return await _sharedController.DeleteImagesForRoom(roomId);
             }
             catch (Exception ex)
             {

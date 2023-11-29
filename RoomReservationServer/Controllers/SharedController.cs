@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Contracts;
+﻿using Contracts;
 using Microsoft.AspNetCore.Mvc;
 using RoomReservationServer.Interfaces;
 
@@ -16,7 +15,7 @@ namespace RoomReservationServer.Controllers
             _repository = repository;
         }
 
-        public IActionResult IsRoomAvailable(Guid id, DateOnly arrival, DateOnly departure)
+        public async Task<IActionResult> IsRoomAvailable(Guid id, DateOnly arrival, DateOnly departure)
         {
             // check if dates follow the common sense
             IActionResult check = CheckDates(arrival, departure);
@@ -26,7 +25,7 @@ namespace RoomReservationServer.Controllers
             }
 
             // if all is ok, proceed with the request:
-            var room = _repository.Room.GetRoomWithReservations(id);
+            var room = await _repository.Room.GetRoomWithReservationsAsync(id);
             if (room == null)
             {
                 _logger.LogError($"Room with id: {id}, hasn't been found in db.");
@@ -66,7 +65,7 @@ namespace RoomReservationServer.Controllers
             return NoContent();
         }
 
-        public IActionResult DeleteImagesForRoom(Guid roomId)
+        public async Task<IActionResult> DeleteImagesForRoom(Guid roomId)
         {
             var images = _repository.Image.GetImagesForRoom(roomId);
             if (!images.Any())
@@ -86,13 +85,13 @@ namespace RoomReservationServer.Controllers
             }
 
             // then, delete
-            foreach(var image in images)
+            foreach (var image in images)
             {
                 System.IO.File.Delete(image.Path);
                 _repository.Image.DeleteImage(image);
             }
 
-            _repository.Save();
+            await _repository.SaveAsync();
 
             return NoContent();
         }

@@ -112,7 +112,7 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateReservation([FromBody] ReservationForCreationDto reservation)
+        public async Task<IActionResult> CreateReservation([FromBody] ReservationForCreationDto reservation)
         {
             try
             {
@@ -129,7 +129,7 @@ namespace RoomReservationServer.Controllers
                     return BadRequest("Invalid model object");
                 }
 
-                IActionResult check = _sharedController.IsRoomAvailable(reservation.RoomId, reservation.Arrival, reservation.Departure);
+                IActionResult check = await _sharedController.IsRoomAvailable(reservation.RoomId, reservation.Arrival, reservation.Departure);
                 if (check is BadRequestObjectResult || check is NotFoundResult)
                 {
                     return check;
@@ -139,7 +139,7 @@ namespace RoomReservationServer.Controllers
                     return BadRequest("Room you are trying to reserve is already reserved for your specified dates.");
                 }
 
-                var room = _repository.Room.GetRoomById(reservation.RoomId);
+                var room = await _repository.Room.GetRoomByIdAsync(reservation.RoomId);
                 if (room is null)
                 {
                     _logger.LogError($"Room with id: {reservation.RoomId}, hasn't been found in db.");
@@ -155,7 +155,7 @@ namespace RoomReservationServer.Controllers
                 reservationEntity.DateCreated = DateTime.UtcNow;
 
                 _repository.Reservation.CreateReservation(reservationEntity);
-                _repository.Save();
+                await _repository.SaveAsync();
 
                 var createdReservation = _mapper.Map<ReservationDto>(reservationEntity);
 
@@ -204,7 +204,7 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpPut("{id}"), Authorize]
-        public IActionResult UpdateReservation(Guid id, [FromBody] ReservationForUpdateDto reservation)
+        public async Task<IActionResult> UpdateReservation(Guid id, [FromBody] ReservationForUpdateDto reservation)
         {
             try
             {
@@ -232,7 +232,7 @@ namespace RoomReservationServer.Controllers
                 _mapper.Map(reservation, reservationEntity);
 
                 _repository.Reservation.UpdateReservation(reservationEntity);
-                _repository.Save();
+                await _repository.SaveAsync();
 
                 var messageToGuest = new Message(new string[] { "oleksbab20@gmail.com" }, $"Update for your booking guest details, ID: {reservationEntity.Id}", @$"
                     <p>Dear <i>{reservationEntity.GuestName}</i>,
@@ -285,7 +285,7 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpDelete("{id}"), Authorize]
-        public IActionResult DeleteReservation(Guid id)
+        public async Task<IActionResult> DeleteReservation(Guid id)
         {
             try
             {
@@ -297,7 +297,7 @@ namespace RoomReservationServer.Controllers
                 }
 
                 _repository.Reservation.DeleteReservation(reservation);
-                _repository.Save();
+                await _repository.SaveAsync();
 
                 var messageToGuest = new Message(new string[] { "oleksbab20@gmail.com" }, $"Your booking is removed, ID: {reservation.Id}", @$"
                     <p>Dear <i>{reservation.GuestName}</i>,

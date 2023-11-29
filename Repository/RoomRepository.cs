@@ -12,31 +12,31 @@ namespace Repository
         {
         }
 
-        public IEnumerable<Room> GetAllRooms()
+        public async Task<IEnumerable<Room>> GetAllRoomsAsync()
         {
-            return FindAll()
+            return await FindAll()
                 .OrderBy(room => room.Name)
-                .ToList();
+                .ToListAsync();
         }
 
-        public Room GetRoomById(Guid roomId)
+        public async Task<Room> GetRoomByIdAsync(Guid roomId)
         {
-            return FindByCondition(room => room.Id.Equals(roomId))
-                .FirstOrDefault();
+            return await FindByCondition(room => room.Id.Equals(roomId))
+                .FirstOrDefaultAsync();
         }
 
-        public Room GetRoomWithReservations(Guid roomId)
+        public async Task<Room> GetRoomWithReservationsAsync(Guid roomId)
         {
-            return FindByCondition(room => room.Id.Equals(roomId))
+            return await FindByCondition(room => room.Id.Equals(roomId))
                 .Include(room => room.Reservations)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
         }
         
-        public Room GetRoomWithImages(Guid roomId)
+        public async Task<Room> GetRoomWithImagesAsync(Guid roomId)
         {
-            return FindByCondition(room => room.Id.Equals(roomId))
+            return await FindByCondition(room => room.Id.Equals(roomId))
                 .Include(room => room.Images)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
         }
 
         public void CreateRoom(Room room)
@@ -62,19 +62,15 @@ namespace Repository
 
 
 
-        public IEnumerable<Room> GetAvailableRooms(DateOnly arrival, DateOnly departure)
+        public async Task<IEnumerable<Room>> GetAvailableRoomsAsync(DateOnly arrival, DateOnly departure)
         {
-            return FindAll()
+            return await FindAll()
                 .Include(room => room.Reservations)
                 .Include(room => room.Images)
                 .Where(room => room.Reservations
                     .All(reservation => reservation.Departure <= arrival || reservation.Arrival >= departure))
                 .OrderBy(room => room.Name)
-                .ToList();
-
-            //.Where(room => room.Reservations
-            //        .Where(reservation => reservation.Arrival >= arrival && reservation.Departure <= departure)
-            //    )
+                .ToListAsync();
         }
     }
 }
