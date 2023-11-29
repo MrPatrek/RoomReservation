@@ -4,10 +4,10 @@ namespace Contracts
 {
     public interface IImageRepository
     {
-        IEnumerable<Image> GetAllImages();
-        Image GetImageById(Guid imageId);
-        Image GetImageWithDetails(Guid imageId);
-        IEnumerable<Image> GetImagesForRoom(Guid roomId);
+        Task<IEnumerable<Image>> GetAllImagesAsync();
+        Task<Image> GetImageByIdAsync(Guid imageId);
+        Task<Image> GetImageWithDetailsAsync(Guid imageId);
+        Task<IEnumerable<Image>> GetImagesForRoomAsync(Guid roomId);
         void CreateImage(Image image);
         void DeleteImage(Image image);
     }

@@ -15,7 +15,7 @@ namespace RoomReservationServer.Controllers
             _repository = repository;
         }
 
-        public async Task<IActionResult> IsRoomAvailable(Guid id, DateOnly arrival, DateOnly departure)
+        public async Task<IActionResult> IsRoomAvailableAsync(Guid id, DateOnly arrival, DateOnly departure)
         {
             // check if dates follow the common sense
             IActionResult check = CheckDates(arrival, departure);
@@ -65,9 +65,9 @@ namespace RoomReservationServer.Controllers
             return NoContent();
         }
 
-        public async Task<IActionResult> DeleteImagesForRoom(Guid roomId)
+        public async Task<IActionResult> DeleteImagesForRoomAsync(Guid roomId)
         {
-            var images = _repository.Image.GetImagesForRoom(roomId);
+            var images = await _repository.Image.GetImagesForRoomAsync(roomId);
             if (!images.Any())
             {
                 _logger.LogInfo($"No images to delete for the room with ID: {roomId}");

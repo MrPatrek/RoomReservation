@@ -30,11 +30,11 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpGet, Authorize]
-        public IActionResult GetAllReservations()
+        public async Task<IActionResult> GetAllReservations()
         {
             try
             {
-                var reservations = _repository.Reservation.GetAllReservations();
+                var reservations = await _repository.Reservation.GetAllReservationsAsync();
 
                 if (!reservations.Any())
                 {
@@ -58,11 +58,11 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpGet("{id}", Name = "ReservationById")]
-        public IActionResult GetReservationById(Guid id)
+        public async Task<IActionResult> GetReservationById(Guid id)
         {
             try
             {
-                var reservation = _repository.Reservation.GetReservationById(id);
+                var reservation = await _repository.Reservation.GetReservationByIdAsync(id);
 
                 if (reservation is null)
                 {
@@ -85,11 +85,11 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpGet("{id}/room")]
-        public IActionResult GetReservationWithDetails(Guid id)
+        public async Task<IActionResult> GetReservationWithDetails(Guid id)
         {
             try
             {
-                var reservation = _repository.Reservation.GetReservationWithDetails(id);
+                var reservation = await _repository.Reservation.GetReservationWithDetailsAsync(id);
 
                 if (reservation == null)
                 {
@@ -129,7 +129,7 @@ namespace RoomReservationServer.Controllers
                     return BadRequest("Invalid model object");
                 }
 
-                IActionResult check = await _sharedController.IsRoomAvailable(reservation.RoomId, reservation.Arrival, reservation.Departure);
+                IActionResult check = await _sharedController.IsRoomAvailableAsync(reservation.RoomId, reservation.Arrival, reservation.Departure);
                 if (check is BadRequestObjectResult || check is NotFoundResult)
                 {
                     return check;
@@ -220,7 +220,7 @@ namespace RoomReservationServer.Controllers
                     return BadRequest("Invalid model object");
                 }
 
-                var reservationEntity = _repository.Reservation.GetReservationWithDetails(id);          // with details so that we can then get the room data for the part below
+                var reservationEntity = await _repository.Reservation.GetReservationWithDetailsAsync(id);          // with details so that we can then get the room data for the part below
                 if (reservationEntity is null)
                 {
                     _logger.LogError($"Reservation with id: {id}, hasn't been found in db.");
@@ -289,7 +289,7 @@ namespace RoomReservationServer.Controllers
         {
             try
             {
-                var reservation = _repository.Reservation.GetReservationById(id);
+                var reservation = await _repository.Reservation.GetReservationByIdAsync(id);
                 if (reservation == null)
                 {
                     _logger.LogError($"Reservation with id: {id}, hasn't been found in db.");

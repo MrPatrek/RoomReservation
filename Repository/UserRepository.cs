@@ -1,6 +1,7 @@
 ﻿using Contracts;
 using Entities;
 using Entities.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repository
 {
@@ -11,10 +12,10 @@ namespace Repository
         {
         }
 
-        public User GetUserByUsername(string username)
+        public async Task<User> GetUserByUsernameAsync(string username)
         {
-            return FindByCondition(user => user.Username.Equals(username))
-                .FirstOrDefault();
+            return await FindByCondition(user => user.Username.Equals(username))
+                .FirstOrDefaultAsync();
         }
 
     }

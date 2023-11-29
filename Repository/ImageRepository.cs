@@ -12,31 +12,31 @@ namespace Repository
         {
         }
 
-        public IEnumerable<Image> GetAllImages()
+        public async Task<IEnumerable<Image>> GetAllImagesAsync()
         {
-            return FindAll()
+            return await FindAll()
                 .OrderBy(image => image.RoomId)
-                .ToList();
+                .ToListAsync();
         }
 
-        public Image GetImageById(Guid imageId)
+        public async Task<Image> GetImageByIdAsync(Guid imageId)
         {
-            return FindByCondition(image => image.Id.Equals(imageId))
-                .FirstOrDefault();
+            return await FindByCondition(image => image.Id.Equals(imageId))
+                .FirstOrDefaultAsync();
         }
 
-        public Image GetImageWithDetails(Guid imageId)
+        public async Task<Image> GetImageWithDetailsAsync(Guid imageId)
         {
-            return FindByCondition(image => image.Id.Equals(imageId))
+            return await FindByCondition(image => image.Id.Equals(imageId))
                 .Include(image => image.Room)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
         }
 
         // this one is used by DeleteRoom action menthod
-        public IEnumerable<Image> GetImagesForRoom(Guid roomId)
+        public async Task<IEnumerable<Image>> GetImagesForRoomAsync(Guid roomId)
         {
-            return FindByCondition(image => image.RoomId.Equals(roomId))
-                .ToList();
+            return await FindByCondition(image => image.RoomId.Equals(roomId))
+                .ToListAsync();
         }
 
         public void CreateImage(Image image)

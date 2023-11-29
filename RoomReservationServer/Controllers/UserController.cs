@@ -11,14 +11,14 @@ namespace RoomReservationServer.Controllers
 {
     [Route("api/auth")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class UserController : ControllerBase
     {
 
         private ILoggerManager _logger;
         private IRepositoryWrapper _repository;
         private IConfiguration _configuration;
 
-        public AuthController(ILoggerManager logger, IRepositoryWrapper repository, IConfiguration configuration)
+        public UserController(ILoggerManager logger, IRepositoryWrapper repository, IConfiguration configuration)
         {
             _logger = logger;
             _repository = repository;
@@ -26,7 +26,7 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpPost]
-        public IActionResult Login([FromBody] LoginDto loginInput)
+        public async Task<IActionResult> Login([FromBody] LoginDto loginInput)
         {
             if (loginInput is null)
             {
@@ -39,7 +39,7 @@ namespace RoomReservationServer.Controllers
                 return BadRequest("Invalid login object");
             }
 
-            var userDb = _repository.User.GetUserByUsername(loginInput.Username);
+            var userDb = await _repository.User.GetUserByUsernameAsync(loginInput.Username);
             if (userDb is null)
             {
                 return Unauthorized("Wrong username");

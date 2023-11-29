@@ -134,11 +134,11 @@ namespace RoomReservationServer.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllImages()
+        public async Task<IActionResult> GetAllImages()
         {
             try
             {
-                var images = _repository.Image.GetAllImages();
+                var images = await _repository.Image.GetAllImagesAsync();
                 if (!images.Any())
                 {
                     _logger.LogInfo($"No images to return from the database.");
@@ -162,7 +162,7 @@ namespace RoomReservationServer.Controllers
         {
             try
             {
-                var image = _repository.Image.GetImageById(id);
+                var image = await _repository.Image.GetImageByIdAsync(id);
                 if (image == null)
                 {
                     _logger.LogError($"Image with id: {id}, hasn't been found in db.");
@@ -196,7 +196,7 @@ namespace RoomReservationServer.Controllers
         {
             try
             {
-                return await _sharedController.DeleteImagesForRoom(roomId);
+                return await _sharedController.DeleteImagesForRoomAsync(roomId);
             }
             catch (Exception ex)
             {

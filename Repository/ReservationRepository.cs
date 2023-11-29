@@ -12,30 +12,31 @@ namespace Repository
         {
         }
 
-        public IEnumerable<Reservation> GetAllReservations()
+        public async Task<IEnumerable<Reservation>> GetAllReservationsAsync()
         {
-            return FindAll()
+            return await FindAll()
                 .OrderBy(reservation => reservation.DateCreated)
-                .ToList();
+                .ToListAsync();
         }
 
-        public Reservation GetReservationById(Guid reservationId)
+        public async Task<Reservation> GetReservationByIdAsync(Guid reservationId)
         {
-            return FindByCondition(reservation => reservation.Id.Equals(reservationId))
-                .FirstOrDefault();
+            return await FindByCondition(reservation => reservation.Id.Equals(reservationId))
+                .FirstOrDefaultAsync();
         }
 
-        public Reservation GetReservationWithDetails(Guid reservationId)
+        public async Task<Reservation> GetReservationWithDetailsAsync(Guid reservationId)
         {
-            return FindByCondition(reservation => reservation.Id.Equals(reservationId))
+            return await FindByCondition(reservation => reservation.Id.Equals(reservationId))
                 .Include(reservation => reservation.Room)
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
         }
 
         // this one is used by DeleteRoom action menthod
-        public IEnumerable<Reservation> GetReservationsForRoom(Guid roomId)
+        public async Task<IEnumerable<Reservation>> GetReservationsForRoomAsync(Guid roomId)
         {
-            return FindByCondition(reservation => reservation.RoomId.Equals(roomId)).ToList();
+            return await FindByCondition(reservation => reservation.RoomId.Equals(roomId))
+                .ToListAsync();
         }
 
         public void CreateReservation(Reservation reservation)

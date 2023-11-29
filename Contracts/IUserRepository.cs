@@ -4,6 +4,6 @@ namespace Contracts
 {
     public interface IUserRepository
     {
-        User GetUserByUsername(string username);
+        Task<User> GetUserByUsernameAsync(string username);
     }
 }

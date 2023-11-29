@@ -218,13 +218,14 @@ namespace RoomReservationServer.Controllers
                     return NotFound();
                 }
 
-                if (_repository.Reservation.GetReservationsForRoom(id).Any())
+                var reservationsForRoom = await _repository.Reservation.GetReservationsForRoomAsync(id);
+                if (reservationsForRoom.Any())
                 {
                     _logger.LogError($"Cannot delete room with id: {id}. It has related reservations. Delete those reservations first");
                     return BadRequest("Cannot delete room. It has related reservations. Delete those reservations first");
                 }
 
-                IActionResult deleteRoomsResult = await _sharedController.DeleteImagesForRoom(id);
+                IActionResult deleteRoomsResult = await _sharedController.DeleteImagesForRoomAsync(id);
                 if (deleteRoomsResult is not NoContentResult)
                 {
                     return deleteRoomsResult;
@@ -309,7 +310,7 @@ namespace RoomReservationServer.Controllers
                 DateOnly arrival = DateOnly.FromDateTime(arrivalDt);
                 DateOnly departure = DateOnly.FromDateTime(departureDt);
 
-                return await _sharedController.IsRoomAvailable(id, arrival, departure);
+                return await _sharedController.IsRoomAvailableAsync(id, arrival, departure);
             }
             catch (Exception ex)
             {
