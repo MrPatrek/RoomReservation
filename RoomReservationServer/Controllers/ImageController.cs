@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Contracts;
 using Entities.DataTransferObjects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Net.Http.Headers;
@@ -9,7 +10,7 @@ using RoomReservationServer.Interfaces;
 
 namespace RoomReservationServer.Controllers
 {
-    [Route("api/image")]
+    [Route("api/image"), Authorize]
     [ApiController]
     public class ImageController : ControllerBase
     {

@@ -4,6 +4,7 @@ using EmailService;
 using EmailService.Interfaces;
 using Entities.DataTransferObjects;
 using Entities.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RoomReservationServer.Interfaces;
 
@@ -28,16 +29,26 @@ namespace RoomReservationServer.Controllers
             _emailSender = emailSender;
         }
 
-        [HttpGet]
+        [HttpGet, Authorize]
         public IActionResult GetAllReservations()
         {
             try
             {
                 var reservations = _repository.Reservation.GetAllReservations();
-                _logger.LogInfo($"Returned all reservations from database.");
 
-                var reservationsResult = _mapper.Map<IEnumerable<ReservationDto>>(reservations);
-                return Ok(reservationsResult);
+                if (!reservations.Any())
+                {
+                    _logger.LogInfo($"There are no reservations in the database.");
+                    return NoContent();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned all reservations from database.");
+
+                    var reservationsResult = _mapper.Map<IEnumerable<ReservationDto>>(reservations);
+                    return Ok(reservationsResult);
+                }
+
             }
             catch (Exception ex)
             {
@@ -119,9 +130,13 @@ namespace RoomReservationServer.Controllers
                 }
 
                 IActionResult check = _sharedController.IsRoomAvailable(reservation.RoomId, reservation.Arrival, reservation.Departure);
-                if (check is not OkObjectResult)
+                if (check is BadRequestObjectResult || check is NotFoundResult)
                 {
                     return check;
+                }
+                else if (check == Ok(false))
+                {
+                    return BadRequest("Room you are trying to reserve is already reserved for your specified dates.");
                 }
 
                 var room = _repository.Room.GetRoomById(reservation.RoomId);
@@ -188,7 +203,7 @@ namespace RoomReservationServer.Controllers
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize]
         public IActionResult UpdateReservation(Guid id, [FromBody] ReservationForUpdateDto reservation)
         {
             try
@@ -269,7 +284,7 @@ namespace RoomReservationServer.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize]
         public IActionResult DeleteReservation(Guid id)
         {
             try

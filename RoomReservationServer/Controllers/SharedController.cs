@@ -39,7 +39,7 @@ namespace RoomReservationServer.Controllers
             if (!isAvailable)
             {
                 _logger.LogInfo($"Room with id: {id}, is not available between {arrival} and {departure} dates.");
-                return NoContent();
+                return Ok(false);
             }
             else
             {

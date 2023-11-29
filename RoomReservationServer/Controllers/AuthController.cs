@@ -53,8 +53,8 @@ namespace RoomReservationServer.Controllers
                 var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetValue<string>("TokenKey")));
                 var signinCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
                 var tokeOptions = new JwtSecurityToken(
-                    issuer: "https://localhost:5001;http://localhost:5000",
-                    audience: "https://localhost:5001;http://localhost:5000",
+                    issuer: "https://localhost:5001",
+                    audience: "https://localhost:5001",
                     claims: new List<Claim>(),
                     expires: DateTime.Now.AddDays(7),
                     signingCredentials: signinCredentials

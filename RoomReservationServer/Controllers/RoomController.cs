@@ -32,10 +32,20 @@ namespace RoomReservationServer.Controllers
             try
             {
                 var rooms = _repository.Room.GetAllRooms();
-                _logger.LogInfo($"Returned all rooms from database.");
 
-                var roomsResult = _mapper.Map<IEnumerable<RoomDto>>(rooms);
-                return Ok(roomsResult);
+                if (!rooms.Any())
+                {
+                    _logger.LogInfo($"There are no rooms in the database.");
+                    return NoContent();
+                }
+                else
+                {
+                    _logger.LogInfo($"Returned all rooms from database.");
+
+                    var roomsResult = _mapper.Map<IEnumerable<RoomDto>>(rooms);
+                    return Ok(roomsResult);
+                }
+
             }
             catch (Exception ex)
             {
