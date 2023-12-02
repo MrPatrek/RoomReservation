@@ -155,7 +155,6 @@ namespace RoomReservationServer.Controllers
                 reservationEntity.DateCreated = DateTime.UtcNow;
 
                 _repository.Reservation.CreateReservation(reservationEntity);
-                await _repository.SaveAsync();
 
                 var createdReservation = _mapper.Map<ReservationDto>(reservationEntity);
 
@@ -173,10 +172,9 @@ namespace RoomReservationServer.Controllers
 
                     <p>Best regards,
                     <br>Room Reservations</p>
-");
-                // SendEmailAsync() can also be used here, but Outlook won't allow for a second mail that fast
-                // immideately after the first one... But some other mail may.
-                _emailSender.SendEmail(messageToGuest);
+                    ");
+
+                await _emailSender.SendEmailAsync(messageToGuest);
 
                 var messageToHotel = new Message(new string[] { "oleksbab20@gmail.com" }, $"New reservation, ID: {createdReservation.Id}", @$"
                     <p>New reservation details are the following:</p>
@@ -193,8 +191,12 @@ namespace RoomReservationServer.Controllers
                     <br>Guest email: {createdReservation.GuestEmail},
                     <br>Guest phone number: {createdReservation.GuestTel},
                     <br>Remark: {(createdReservation.Remark is not null ? createdReservation.Remark : "<i>blank</i>")}.</p>
-");
-                _emailSender.SendEmail(messageToHotel);
+                    ");
+
+                await _emailSender.SendEmailAsync(messageToHotel);
+
+                // only if email is sent successfully, save the reservation to the DB:
+                await _repository.SaveAsync();
 
                 return CreatedAtRoute("ReservationById", new { id = createdReservation.Id }, createdReservation);
             }
@@ -234,7 +236,6 @@ namespace RoomReservationServer.Controllers
                 _mapper.Map(reservation, reservationEntity);
 
                 _repository.Reservation.UpdateReservation(reservationEntity);
-                await _repository.SaveAsync();
 
                 var messageToGuest = new Message(new string[] { "oleksbab20@gmail.com" }, $"Update for your booking guest details, ID: {reservationEntity.Id}", @$"
                     <p>Dear <i>{reservationEntity.GuestName}</i>,
@@ -255,8 +256,9 @@ namespace RoomReservationServer.Controllers
 
                     <p>Best regards,
                     <br>Room Reservations</p>
-");
-                _emailSender.SendEmail(messageToGuest);
+                    ");
+
+                await _emailSender.SendEmailAsync(messageToGuest);
 
                 var messageToHotel = new Message(new string[] { "oleksbab20@gmail.com" }, $"UPDATED reservation guest details, ID: {reservationEntity.Id}", @$"
                     <p>Reservation <b>guest</b> details have been updated. Guest details now look as follows:</p>
@@ -274,8 +276,11 @@ namespace RoomReservationServer.Controllers
                     <br>Departure date: {reservationEntity.Departure},
                     <br>Price per night: {reservationEntity.Room.Price} EUR,
                     <br>Total price: <b>{reservationEntity.Price} EUR</b>.</p>
-");
-                _emailSender.SendEmail(messageToHotel);
+                    ");
+
+                await _emailSender.SendEmailAsync(messageToHotel);
+
+                await _repository.SaveAsync();
 
                 return NoContent();
             }
@@ -299,7 +304,6 @@ namespace RoomReservationServer.Controllers
                 }
 
                 _repository.Reservation.DeleteReservation(reservation);
-                await _repository.SaveAsync();
 
                 var messageToGuest = new Message(new string[] { "oleksbab20@gmail.com" }, $"Your booking is removed, ID: {reservation.Id}", @$"
                     <p>Dear <i>{reservation.GuestName}</i>,
@@ -307,13 +311,17 @@ namespace RoomReservationServer.Controllers
 
                     <p>Best regards,
                     <br>Room Reservations</p>
-");
-                _emailSender.SendEmail(messageToGuest);
+                    ");
+
+                await _emailSender.SendEmailAsync(messageToGuest);
 
                 var messageToHotel = new Message(new string[] { "oleksbab20@gmail.com" }, $"REMOVED reservation, ID: {reservation.Id}", @$"
                     <p>A reservation has been removed (reservation ID: <i>{reservation.Id}</i>, already an old one).</p>
-");
-                _emailSender.SendEmail(messageToHotel);
+                    ");
+
+                await _emailSender.SendEmailAsync(messageToHotel);
+
+                await _repository.SaveAsync();
 
                 return NoContent();
             }
