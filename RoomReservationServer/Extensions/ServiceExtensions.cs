@@ -28,15 +28,6 @@ namespace RoomReservationServer.Extensions
             });
         }
 
-        public static void ConfigureIISIntegration(this IServiceCollection services)
-        {
-            // We are fine with the default options.
-            services.Configure<IISOptions>(options =>
-            {
-
-            });
-        }
-
         public static void ConfigureControllers(this IServiceCollection services)
         {
             services.AddControllers()
@@ -52,8 +43,11 @@ namespace RoomReservationServer.Extensions
             services.AddSingleton<ILoggerManager, LoggerManager>();
         }
 
-        public static void ConfigureMySqlContext(this IServiceCollection services, string connectionString)
+        public static void ConfigureMySqlContext(this IServiceCollection services, IHostEnvironment env, IConfiguration config)
         {
+            string connectionString = env.IsDevelopment()
+                ? config["mysqlconnection:connectionString"] : Environment.GetEnvironmentVariable("CONNECTION_STRING");
+
             services.AddDbContext<RepositoryContext>(o => o.UseMySql(connectionString,
                 MySqlServerVersion.LatestSupportedServerVersion));
         }
@@ -83,10 +77,14 @@ namespace RoomReservationServer.Extensions
         {
             services.AddScoped<IFileService, FileService>();
         }
-        
-        public static void ConfigureJWTService(this IServiceCollection services, string tokenKey)
+
+        public static void ConfigureJWTService(this IServiceCollection services, IHostEnvironment env, IConfiguration config)
         {
-            services.AddAuthentication(opt => {
+            string tokenKey = env.IsDevelopment()
+                ? config["TokenKey"] : Environment.GetEnvironmentVariable("TOKEN_KEY");
+
+            services.AddAuthentication(opt =>
+            {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })

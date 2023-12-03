@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.FileProviders;
 using NLog;
 using RoomReservationServer.Extensions;
@@ -18,41 +17,19 @@ builder.WebHost.ConfigureKestrel(serverOptions =>
 // Add services to the container.
 
 builder.Services.ConfigureCors();
-builder.Services.ConfigureIISIntegration();
-
 builder.Services.ConfigureLoggerService();
-
-
-
-string connectionString = builder.Environment.IsDevelopment()
-    ? builder.Configuration["mysqlconnection:connectionString"] : Environment.GetEnvironmentVariable("CONNECTION_STRING");
-
-builder.Services.ConfigureMySqlContext(connectionString);
-
-
-
+builder.Services.ConfigureMySqlContext(builder.Environment, builder.Configuration);
 builder.Services.ConfigureRepositoryWrapper();
-
 builder.Services.AddAutoMapper(typeof(Program));
-
 builder.Services.ConfigureSharedController();
-
 builder.Services.ConfigureEmailService(builder.Configuration);
-
 builder.Services.ConfigureFileService();
-
-
-
-string tokenKey = builder.Environment.IsDevelopment()
-    ? builder.Configuration["TokenKey"] : Environment.GetEnvironmentVariable("TOKEN_KEY");
-
-builder.Services.ConfigureJWTService(tokenKey);
-
-
-
+builder.Services.ConfigureJWTService(builder.Environment, builder.Configuration);
 builder.Services.ConfigureControllers();
 
 var app = builder.Build();
+
+ApplyCulture();
 
 // Configure the HTTP request pipeline.
 
@@ -63,34 +40,28 @@ else
 
 app.UseHttpsRedirection();
 
-// We call the UseCors method above the UseAuthorization method, as Microsoft recommends.
-app.UseCors("CorsPolicy");
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-
-
-var cultureInfo = new CultureInfo("sl-SL");
-cultureInfo.NumberFormat.NumberDecimalSeparator = ".";
-
-CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
-CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
-
-
-
-app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions()
 {
     FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), @$"{builder.Configuration["ResourcesDir"]}")),
     RequestPath = new PathString($"/{builder.Configuration["ResourcesDir"]}")
 });
 
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.All
-});
+app.UseCors("CorsPolicy");
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
 app.Run();
+
+
+
+void ApplyCulture()
+{
+    var cultureInfo = new CultureInfo("sl-SL");
+    cultureInfo.NumberFormat.NumberDecimalSeparator = ".";
+
+    CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+    CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+}
